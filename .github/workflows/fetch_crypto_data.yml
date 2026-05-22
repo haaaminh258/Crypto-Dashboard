@@ -1,0 +1,40 @@
+name: Fetch Crypto Data Every 5 Minutes
+
+# Trigger theo lịch: mỗi 5 phút một lần
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Chạy mỗi 5 phút một lần
+  workflow_dispatch:       # Cho phép chạy thủ công từ GitHub Actions UI
+
+jobs:
+  fetch-and-store:
+    runs-on: ubuntu-latest
+    steps:
+      # Bước 1: Lấy source code từ repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Bước 2: Cài đặt Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      # Bước 3: Cài đặt thư viện cần thiết
+      - name: Install dependencies
+        run: |
+          pip install pymysql requests cryptography
+      
+      # Bước 4: Tải file chứng chỉ CA của Aiven (Cần thiết cho kết nối SSL)
+      - name: Download Aiven CA certificate
+        run: curl -sS https://docs.aiven.io/docpad/ca.pem -o ca.pem
+      
+      # Bước 5: Chạy script Python để fetch và lưu dữ liệu
+      - name: Run fetcher script
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+        run: python fetch_and_store.py
