@@ -20,7 +20,7 @@ def get_db_connection():
         port=int(os.environ.get('DB_PORT', 3306)),
         user=os.environ.get('DB_USER', 'root'),
         password=os.environ.get('DB_PASS', ''),
-        database=os.environ.get('DB_NAME', 'stockmarket'),
+        database=os.environ.get('DB_NAME', 'defaultdb'),
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor,
         # Chỉ check SSL nếu chạy trên Github Actions, nếu test local thì bỏ qua
