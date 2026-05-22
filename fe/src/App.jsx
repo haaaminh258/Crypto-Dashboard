@@ -68,7 +68,7 @@ export default function App() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    try { await api.refresh(); } catch (_) {}
+    // Github Action is handling the data fetching now, so we just reload from DB
     await Promise.all([loadMarket(), loadChart(selectedCoin, range), loadMovers()]);
     setRefreshing(false);
   };
@@ -88,13 +88,13 @@ export default function App() {
     if (found) setCoinLatest(found);
   }, [selectedCoin, range]);
 
-  // ── Live update every 10s ────────────────────────────────────────────────────
+  // ── Live update every 5 minutes ────────────────────────────────────────────────────
   useEffect(() => {
     if (liveUpdate) {
       liveRef.current = setInterval(async () => {
         await loadMarket();
         await loadChart(selectedCoin, range);
-      }, 5000);
+      }, 300000); // 5 minutes
     } else {
       clearInterval(liveRef.current);
     }
@@ -195,7 +195,7 @@ export default function App() {
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', position: 'relative' }} />
                   </span>
                   <span className="mono" style={{ fontSize: 10, color: 'var(--green)', letterSpacing: '.07em' }}>
-                    LIVE — REFRESHING EVERY 10 SECONDS
+                    LIVE — REFRESHING EVERY 5 MINUTES
                   </span>
                 </div>
               )}
