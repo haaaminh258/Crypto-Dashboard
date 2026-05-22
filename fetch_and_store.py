@@ -15,16 +15,21 @@ SUPPORTED_COINS = [
 
 # --- 1. Hàm kết nối đến Aiven Database (Yêu Cầu SSL) ---
 def get_db_connection():
+    ssl_ca = None
+    if os.path.exists('/etc/ssl/certs/ca-certificates.crt'):
+        ssl_ca = '/etc/ssl/certs/ca-certificates.crt'
+    elif os.path.exists('ca.pem'):
+        ssl_ca = 'ca.pem'
+    
     return pymysql.connect(
         host=os.environ.get('DB_HOST', 'localhost'),
         port=int(os.environ.get('DB_PORT', 3306)),
         user=os.environ.get('DB_USER', 'root'),
         password=os.environ.get('DB_PASS', ''),
-        database=os.environ.get('DB_NAME', 'defaultdb'),
+        database=os.environ.get('DB_NAME', 'defaultdb'),  
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor,
-        # Chỉ check SSL nếu chạy trên Github Actions, nếu test local thì bỏ qua
-        ssl={'ca': 'ca.pem'} if os.path.exists('ca.pem') else None
+        ssl={'ca': ssl_ca} if ssl_ca else None
     )
 
 # --- 2. Hàm fetch dữ liệu mới nhất từ CoinGecko API ---

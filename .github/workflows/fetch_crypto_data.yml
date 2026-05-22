@@ -25,11 +25,7 @@ jobs:
         run: |
           pip install pymysql requests cryptography
       
-      # Bước 4: Tải file chứng chỉ CA của Aiven (Cần thiết cho kết nối SSL)
-      - name: Download Aiven CA certificate
-        run: curl -sS https://docs.aiven.io/docpad/ca.pem -o ca.pem
-      
-      # Bước 5: Chạy script Python để fetch và lưu dữ liệu
+      # Bước 4: Chạy script Python để fetch và lưu dữ liệu
       - name: Run fetcher script
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
