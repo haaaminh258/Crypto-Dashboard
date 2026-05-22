@@ -13,13 +13,15 @@ SUPPORTED_COINS = [
     "bitcoin-cash", "near", "litecoin", "uniswap"
 ]
 
+import ssl
+
 # --- 1. Hàm kết nối đến Aiven Database (Yêu Cầu SSL) ---
 def get_db_connection():
-    ssl_ca = None
-    if os.path.exists('/etc/ssl/certs/ca-certificates.crt'):
-        ssl_ca = '/etc/ssl/certs/ca-certificates.crt'
-    elif os.path.exists('ca.pem'):
-        ssl_ca = 'ca.pem'
+    # Tạo SSL Context bỏ qua việc xác thực chứng chỉ (Verify Mode = NONE)
+    # Cách này giống hệt với sslMode=REQUIRED trên Java, vẫn mã hoá nhưng dẹp lỗi Self-signed
+    ssl_ctx = ssl.create_default_context()
+    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_NONE
     
     return pymysql.connect(
         host=os.environ.get('DB_HOST', 'localhost'),
@@ -29,7 +31,7 @@ def get_db_connection():
         database=os.environ.get('DB_NAME', 'defaultdb'),  
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor,
-        ssl={'ca': ssl_ca} if ssl_ca else None
+        ssl=ssl_ctx
     )
 
 # --- 2. Hàm fetch dữ liệu mới nhất từ CoinGecko API ---
