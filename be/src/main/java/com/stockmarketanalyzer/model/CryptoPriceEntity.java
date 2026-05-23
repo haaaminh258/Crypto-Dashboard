@@ -33,12 +33,12 @@ public class CryptoPriceEntity {
     private BigDecimal volume24h;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime timestamp;
 
     @PrePersist
     protected void onCreate() {
-        if (timestamp == null) timestamp = LocalDateTime.now();
+        if (timestamp == null) timestamp = LocalDateTime.now(java.time.ZoneOffset.UTC);
     }
 
     public CryptoPriceEntity() {}

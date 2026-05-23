@@ -57,7 +57,7 @@ public class CryptoApiService {
         try {
             String response = restTemplate.getForObject(API_URL, String.class);
             JsonNode root = objectMapper.readTree(response);
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now(java.time.ZoneOffset.UTC);
 
             for (String coin : SUPPORTED_COINS) {
                 JsonNode node = root.get(coin);

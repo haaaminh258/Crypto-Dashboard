@@ -58,7 +58,7 @@ public class CryptoController {
             @RequestParam(defaultValue = "1d") String range,
             @RequestParam(defaultValue = "200") int maxPoints) {
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(java.time.ZoneOffset.UTC);
         LocalDateTime from = switch (range.toLowerCase()) {
             case "1h"  -> now.minusHours(1);
             case "6h"  -> now.minusHours(6);
@@ -112,7 +112,7 @@ public class CryptoController {
         List<CryptoPriceEntity> saved = cryptoApiService.fetchCryptoPrices();
         Map<String, Object> resp = new LinkedHashMap<>();
         resp.put("fetched", saved.size());
-        resp.put("timestamp", LocalDateTime.now().toString());
+        resp.put("timestamp", LocalDateTime.now(java.time.ZoneOffset.UTC).toString());
         resp.put("coins", saved.stream().map(CryptoPriceEntity::getName).toList());
         return ResponseEntity.ok(resp);
     }
